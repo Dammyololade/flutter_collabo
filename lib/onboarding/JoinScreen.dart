@@ -1,27 +1,25 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_collabo/AppConfig.dart';
 import 'package:flutter_collabo/ProjectDetailsScreen.dart';
 import 'package:flutter_collabo/Utility.dart';
 import 'package:flutter_collabo/custom/CustomWidgets.dart';
 import 'package:flutter_collabo/model/Project.dart';
-import 'package:uuid/uuid.dart';
 
-import 'AppConfig.dart';
-
-///Createn a project screen
+///
 /// project: flutter_collabo
-/// @package: 
+/// @package: onboarding
 /// @author dammyololade <damola@kobo360.com>
 /// created on 2019-06-01
-class CreateProjectScreen extends StatefulWidget {
+class JoinScreen extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return _CreateProjectScreenState();
+    return _JoinScreenState();
   }
 
 }
 
-class _CreateProjectScreenState extends State<CreateProjectScreen> {
+class _JoinScreenState extends State<JoinScreen> {
 
   var _nameController = TextEditingController();
   bool processing = false;
@@ -29,10 +27,6 @@ class _CreateProjectScreenState extends State<CreateProjectScreen> {
   var _scaffoldKey = GlobalKey<ScaffoldState>();
   var _formKey = GlobalKey<FormState>();
 
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +57,7 @@ class _CreateProjectScreenState extends State<CreateProjectScreen> {
                   padding: const EdgeInsets.only(top: 5, bottom: 20, left: 20),
                   child: Row(
                     children: <Widget>[
-                      Text("Create a new project",
+                      Text("Collaborate on a project",
                         style: TextStyle(
                             color: AppConfig.APP_PRIMARY_COLOR,
                             fontWeight: FontWeight.bold,
@@ -76,27 +70,27 @@ class _CreateProjectScreenState extends State<CreateProjectScreen> {
 
                 SizedBox(height: 70,),
 
-                Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Column(
-                    children: <Widget>[
-                      CustomWidgets.FormTextField("Project name", "", _nameController,
-                        TextInputType.text, "enter a project name", borderColor: Colors.transparent,
-                        context: context, hasBorder: false),
-
-                      Container(color: Colors.black26, height: 1,)
-                    ],
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 20),
+                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: AppConfig.APP_PRIMARY_COLOR)
                   ),
+                  child:  CustomWidgets.FormTextField("", "Enter the project link", _nameController,
+                      TextInputType.text, "enter a link", borderColor: Colors.transparent,
+                      context: context, hasBorder: false),
+
                 ),
 
                 SizedBox(height: 150,),
 
                 processing ? CircularProgressIndicator() :
-                  CustomWidgets.positiveButton("Submit", (){
-                    if(_formKey.currentState.validate()){
-                      addProject();
-                    }
-                  }),
+                CustomWidgets.positiveButton("Submit", (){
+                  if(_formKey.currentState.validate()){
+                    findProject();
+                  }
+                }),
 
                 SizedBox(height: 20,),
               ],
@@ -107,25 +101,31 @@ class _CreateProjectScreenState extends State<CreateProjectScreen> {
     );
   }
 
-  addProject()async
+  void findProject() async
   {
     setState(() {
       processing = true;
     });
-    String serial = await Utility.getDeviceSerial();
-    DateTime date = DateTime.now();
-    Uuid uuid = new Uuid();
-    String inviteLink = _nameController.text + "-" + uuid.v1().substring(0, 5);
-    Project project = Project(name: _nameController.text, ownerId: serial, inviteLink: inviteLink, createdOn: date);
-    Firestore.instance.collection(AppConfig.projects).add(project.toMap()).then((docRef){
-      project.documentReference = docRef;
-      project.docId = docRef.documentID;
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => ProjectDetailsScreen(project)));
-    }).catchError((error){
+    QuerySnapshot snapshot = await Firestore.instance.collection(AppConfig.projects)
+        .where(Project.cInviteLink, isEqualTo: _nameController.text)
+        .getDocuments();
+    if(snapshot.documents.length > 0){
+      Project project = Project.fromSnapshot(snapshot.documents[0]);
+      addUserToProject(project);
+    } else{
       setState(() {
         processing = false;
       });
-    });
+      _scaffoldKey.currentState.showSnackBar(SnackBar(content:
+        Text("Cant find a project with this link"),backgroundColor: Colors.red,));
+    }
+  }
+
+  void addUserToProject(Project project)async
+  {
+    String serial = await Utility.getDeviceSerial();
+    var value = await project.documentReference.updateData({Project.cUsers: FieldValue.arrayUnion([serial])});
+    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => ProjectDetailsScreen(project)));
   }
 
 }

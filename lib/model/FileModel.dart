@@ -6,26 +6,22 @@ import 'package:flutter_collabo/model/base_model.dart';
 /// @package: model
 /// @author dammyololade <damola@kobo360.com>
 /// created on 2019-06-01
-class Project extends BaseModel{
-
+class FileModel extends BaseModel
+{
   static String cName = "name";
   static String cOwnerId = "ownerId";
-  static String cFiles = "files";
-  static String cInviteLink = "inviteLink";
+  static String cFileContent = "fileContent";
   static String cCreatedOn = "createdOn";
-  static String cUsers = "users";
+  static String cUpdatedOn = "updatedOn";
 
-  String name, ownerId, inviteLink;
+  String name, ownerId, fileContent, docId;
   DocumentReference documentReference;
-  String docId;
-  List files;
-  DateTime createdOn;
-  List users;
+  DateTime createdOn, updatedOn;
 
 
-  Project({this.name, this.ownerId, this.inviteLink, this.createdOn});
+  FileModel({this.name, this.ownerId, this.fileContent});
 
-  Project.fromSnapshot(DocumentSnapshot snapshot)
+  FileModel.fromSnapshot(DocumentSnapshot snapshot)
   {
     createObjectFromSnapshot(snapshot);
   }
@@ -36,9 +32,7 @@ class Project extends BaseModel{
     docId = snapshot.documentID;
     name = snapshot.data[cName];
     ownerId = snapshot.data[cOwnerId];
-    inviteLink = snapshot.data[cInviteLink];
-    files = snapshot.data[cFiles];
-    users = snapshot.data[cUsers];
+    fileContent = snapshot.data[cFileContent];
   }
 
   @override
@@ -46,9 +40,10 @@ class Project extends BaseModel{
     return {
       cOwnerId: ownerId,
       cName: name,
-      cInviteLink: inviteLink,
-      cCreatedOn: createdOn,
-      cUsers: []
+      cCreatedOn: DateTime.now(),
+      cUpdatedOn: DateTime.now(),
+      cFileContent: "",
     };
   }
+
 }

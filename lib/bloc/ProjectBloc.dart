@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_collabo/model/FileModel.dart';
 import 'package:flutter_collabo/model/Project.dart';
 import 'package:rxdart/rxdart.dart';
 

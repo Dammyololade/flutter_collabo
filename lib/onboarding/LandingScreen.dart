@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_collabo/AppConfig.dart';
-import 'package:flutter_collabo/CreateProjectScreen.dart';
+import 'package:flutter_collabo/onboarding/CreateProjectScreen.dart';
 import 'package:flutter_collabo/ProjectDetailsScreen.dart';
 import 'package:flutter_collabo/custom/CustomWidgets.dart';
-import 'package:flutter_collabo/custom/ProjectBloc.dart';
+import 'package:flutter_collabo/bloc/ProjectBloc.dart';
 import 'package:flutter_collabo/model/Project.dart';
+import 'package:flutter_collabo/onboarding/JoinScreen.dart';
 
 ///the main screen where the user starts the journey from
 /// project: flutter_collabo
@@ -95,7 +96,7 @@ class _LandingScreenState extends State<LandingScreen> {
             SizedBox(height: 20,),
 
             CustomWidgets.negativeButton("Join using a link", (){
-
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) => JoinScreen()));
             }),
 
             SizedBox(height: 40,),

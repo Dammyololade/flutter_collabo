@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
+import 'AppConfig.dart';
 import 'onboarding/LandingScreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -29,6 +30,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
+        primaryColor: AppConfig.APP_PRIMARY_COLOR,
+        accentColor: AppConfig.APP_ACCENT_COLOR,
         // This is the theme of your application.
         //
         // Try running your application with "flutter run". You'll see the

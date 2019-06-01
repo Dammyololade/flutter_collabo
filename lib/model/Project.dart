@@ -20,13 +20,21 @@ class Project extends BaseModel{
   List files;
   DateTime createdOn;
 
+
+  Project({this.name, this.ownerId, this.inviteLink, this.createdOn});
+
+  Project.fromSnapshot(DocumentSnapshot snapshot)
+  {
+    createObjectFromSnapshot(snapshot);
+  }
+
   @override
   createObjectFromSnapshot(DocumentSnapshot snapshot) {
     documentReference = snapshot.reference;
     docId = snapshot.documentID;
     name = snapshot.data[cName];
     ownerId = snapshot.data[cOwnerId];
-    inviteLink = snapshot.data[inviteLink];
+    inviteLink = snapshot.data[cInviteLink];
     files = snapshot.data[cFiles];
   }
 

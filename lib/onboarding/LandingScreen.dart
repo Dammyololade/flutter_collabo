@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_collabo/AppConfig.dart';
 import 'package:flutter_collabo/CreateProjectScreen.dart';
+import 'package:flutter_collabo/ProjectDetailsScreen.dart';
 import 'package:flutter_collabo/custom/CustomWidgets.dart';
+import 'package:flutter_collabo/custom/ProjectBloc.dart';
+import 'package:flutter_collabo/model/Project.dart';
 
 ///the main screen where the user starts the journey from
 /// project: flutter_collabo
@@ -18,33 +21,124 @@ class LandingScreen extends StatefulWidget {
 }
 
 class _LandingScreenState extends State<LandingScreen> {
+
+  ValueNotifier<List<Project>> projectListNotifier = ValueNotifier([]);
+  bool hasFetchedList = false;
+  ProjectBloc projectBloc = ProjectBloc();
+
+  @override
+  void initState() {
+    projectBloc.getProjects();
+    super.initState();
+    projectBloc.outProject.listen(onProjectSnapshot);
+  }
+
+  onProjectSnapshot(List<Project> newList)
+  {
+    hasFetchedList = true;
+    projectListNotifier.value = newList;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppConfig.APP_BACKGROUND_COLOR,
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            child: SizedBox()
-          ),
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: AppConfig.APP_BACKGROUND_COLOR,
+        body: Column(
+          children: <Widget>[
 
-          CustomWidgets.positiveButton("Create A Project", (){
-            Navigator.of(context).push(MaterialPageRoute(builder: (context) => CreateProjectScreen()));
-          }),
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+              child: Row(
+                children: <Widget>[
+                  Text("Your projects",
+                    style: TextStyle(
+                      fontSize: 23,
+                      fontWeight: FontWeight.bold,
+                      color: AppConfig.APP_PRIMARY_COLOR
+                    ),
+                  ),
+                ],
+              ),
+            ),
 
-          SizedBox(height: 20,),
+            SizedBox(height: 20,),
 
-          Text("Or"),
+            Expanded(
+              child: ValueListenableBuilder(
+                valueListenable: projectListNotifier,
+                builder: (context, List<Project> values, Widget child){
+                  return hasFetchedList ? buildProjects(values) :
+                    Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          CircularProgressIndicator(),
+                          SizedBox(height: 10,),
 
-          SizedBox(height: 20,),
+                          Text("Fetching your project"),
+                        ],
+                      ),
+                    );
+                }
+              ),
+            ),
 
-          CustomWidgets.negativeButton("Join using a link", (){
+            CustomWidgets.positiveButton("Create A Project", (){
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) => CreateProjectScreen()));
+            }),
 
-          }),
+            SizedBox(height: 20,),
 
-          SizedBox(height: 40,),
-        ],
+            Text("Or"),
+
+            SizedBox(height: 20,),
+
+            CustomWidgets.negativeButton("Join using a link", (){
+
+            }),
+
+            SizedBox(height: 40,),
+          ],
+        ),
       ),
+    );
+  }
+
+  Widget buildProjects(List<Project> projectList)
+  {
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: projectList.length,
+      padding: EdgeInsets.all(20),
+      itemBuilder: (context, index){
+        Project project = projectList[index];
+        return InkWell(
+          onTap: (){
+            Navigator.of(context).push(MaterialPageRoute(builder: (context) => ProjectDetailsScreen(project)));
+          },
+          child: Column(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                child: Row(
+                  children: <Widget>[
+                    Expanded(child: Text("${project.name}",
+                      style: TextStyle(
+
+                      ),
+                    )),
+
+                    Icon(Icons.arrow_forward_ios, color: Colors.black26, size: 20,),
+                  ],
+                ),
+              ),
+
+              Divider(height: 1,),
+            ],
+          ),
+        );
+      }
     );
   }
 

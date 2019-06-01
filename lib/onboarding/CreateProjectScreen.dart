@@ -111,7 +111,7 @@ class _CreateProjectScreenState extends State<CreateProjectScreen> {
     setState(() {
       processing = true;
     });
-    String serial = await Utility.getDeviceSerial();
+    String serial = await Utility().getDeviceSerial();
     DateTime date = DateTime.now();
     Uuid uuid = new Uuid();
     String inviteLink = _nameController.text + "-" + uuid.v1().substring(0, 5);

@@ -18,19 +18,33 @@ class ProjectBloc
   Sink<List<Project>> get inProject => projectController.sink;
   Stream<List<Project>> get outProject => projectController.stream;
   List<Project> currentProjectList = [];
+  List<Project> invitedProjectList = [];
 
-  getProjects()async
+  getProjects(String deviceId)async
   {
-    String deviceid = await Utility.getDeviceSerial();
     Firestore.instance.collection(AppConfig.projects)
-        .where(Project.cOwnerId, isEqualTo: deviceid).snapshots()
+        .where(Project.cOwnerId, isEqualTo: deviceId).snapshots()
         .listen((QuerySnapshot snapshot){
           currentProjectList = [];
           for(DocumentSnapshot documentSnapshot in snapshot.documents){
             Project project = Project.fromSnapshot(documentSnapshot);
             currentProjectList.add(project);
           }
-          inProject.add(currentProjectList);
+          //inProject.add(currentProjectList);
+          getInvitedProjects(deviceId);
+    });
+  }
+
+  getInvitedProjects(String deviceId)async
+  {
+    Firestore.instance.collection(AppConfig.projects)
+      .where(Project.cUsers, arrayContains: deviceId).snapshots()
+        .listen((QuerySnapshot snapshot){
+      for(DocumentSnapshot documentSnapshot in snapshot.documents){
+        Project project = Project.fromSnapshot(documentSnapshot);
+        currentProjectList.add(project);
+      }
+      inProject.add(currentProjectList);
     });
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_collabo/AppConfig.dart';
+import 'package:flutter_collabo/Utility.dart';
 import 'package:flutter_collabo/onboarding/CreateProjectScreen.dart';
 import 'package:flutter_collabo/ProjectDetailsScreen.dart';
 import 'package:flutter_collabo/custom/CustomWidgets.dart';
@@ -26,12 +27,20 @@ class _LandingScreenState extends State<LandingScreen> {
   ValueNotifier<List<Project>> projectListNotifier = ValueNotifier([]);
   bool hasFetchedList = false;
   ProjectBloc projectBloc = ProjectBloc();
+  String deviceId;
+  List<Project> projectsList = [];
 
   @override
   void initState() {
-    projectBloc.getProjects();
     super.initState();
     projectBloc.outProject.listen(onProjectSnapshot);
+    query();
+  }
+
+  query()async
+  {
+    deviceId = await Utility().getDeviceSerial();
+    projectBloc.getProjects(deviceId);
   }
 
   onProjectSnapshot(List<Project> newList)

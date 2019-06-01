@@ -9,7 +9,7 @@ import 'package:device_info/device_info.dart';
 /// created on 2019-06-01
 class Utility {
 
-  static Future<String> getDeviceSerial() async {
+  Future<String> getDeviceSerial() async {
     DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
     String serial = "";
     if (Platform.isAndroid) {

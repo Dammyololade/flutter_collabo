@@ -9,17 +9,21 @@ import 'package:flutter_collabo/model/base_model.dart';
 class FileModel extends BaseModel
 {
   static String cName = "name";
-  static String cOwnerId = "ownerId";
+  static String cProjectId = "projectId";
   static String cFileContent = "fileContent";
   static String cCreatedOn = "createdOn";
   static String cUpdatedOn = "updatedOn";
+  static String cLastEditedBy = "lastEdittedBy";
+  static String cOnlineViewers = "onlineViewers";
 
-  String name, ownerId, fileContent, docId;
+  String name, projectId, fileContent, docId;
   DocumentReference documentReference;
   DateTime createdOn, updatedOn;
+  String lastEditedBy;
+  int onlineViewers;
 
 
-  FileModel({this.name, this.ownerId, this.fileContent});
+  FileModel({this.name, this.projectId, this.fileContent});
 
   FileModel.fromSnapshot(DocumentSnapshot snapshot)
   {
@@ -31,14 +35,16 @@ class FileModel extends BaseModel
     documentReference = snapshot.reference;
     docId = snapshot.documentID;
     name = snapshot.data[cName];
-    ownerId = snapshot.data[cOwnerId];
+    projectId = snapshot.data[cProjectId];
     fileContent = snapshot.data[cFileContent];
+    lastEditedBy = snapshot.data[cLastEditedBy];
+    onlineViewers = snapshot.data[cOnlineViewers];
   }
 
   @override
   Map<String, dynamic> toMap() {
     return {
-      cOwnerId: ownerId,
+      cProjectId: projectId,
       cName: name,
       cCreatedOn: DateTime.now(),
       cUpdatedOn: DateTime.now(),

@@ -19,7 +19,7 @@ class FileBloc
   getProjectFiles(Project project)
   {
     Firestore.instance.collection(AppConfig.files)
-        .where(FileModel.cOwnerId, isEqualTo: project.ownerId)
+        .where(FileModel.cProjectId, isEqualTo: project.docId)
         .snapshots().listen((QuerySnapshot snapshot){
           currentFileList = [];
           for(DocumentSnapshot documentSnapshot in snapshot.documents){

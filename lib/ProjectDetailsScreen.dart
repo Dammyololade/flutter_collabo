@@ -63,7 +63,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
           IconButton(
             icon: Icon(Icons.share),
             onPressed: (){
-              Share.share("Use this link to collaborate with me on Collabo, ${project.inviteLink}");
+              Share.share("${project.inviteLink}");
             }
           )
 
@@ -145,9 +145,10 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
     setState(() {
       processing = true;
     });
-    FileModel model = FileModel(name: _nameController.text, ownerId: project.ownerId, fileContent: "");
+    FileModel model = FileModel(name: _nameController.text, projectId: project.docId, fileContent: "");
     Firestore.instance.collection(AppConfig.files).add(model.toMap()).then((docRef){
-      project.documentReference.updateData({Project.cFiles : FieldValue.arrayUnion([docRef])});
+      Firestore.instance.document("${AppConfig.projects}/${project.docId}")
+          .updateData({Project.cFiles : FieldValue.arrayUnion([docRef])});
       Navigator.of(context).pop();
     });
   }
@@ -162,7 +163,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
           FileModel model = values[index];
           return InkWell(
             onTap: (){
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) => EditorScreen()));
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) => EditorScreen(model, project)));
             },
             child: Column(
               children: <Widget>[

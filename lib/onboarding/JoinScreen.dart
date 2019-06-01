@@ -123,7 +123,7 @@ class _JoinScreenState extends State<JoinScreen> {
 
   void addUserToProject(Project project)async
   {
-    String serial = await Utility.getDeviceSerial();
+    String serial = await Utility().getDeviceSerial();
     var value = await project.documentReference.updateData({Project.cUsers: FieldValue.arrayUnion([serial])});
     Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => ProjectDetailsScreen(project)));
   }

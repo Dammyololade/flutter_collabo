@@ -9,17 +9,17 @@ import 'package:firebase_core/firebase_core.dart';
 Future main() async{
 
   final FirebaseApp app = await FirebaseApp.configure(
-    name: "BattleField",
+    name: "flutter Collabo",
     options: Platform.isAndroid ? FirebaseOptions(
-        googleAppID: "1:349148006760:android:2faf0d642a6ab859",
-        apiKey: "AIzaSyCfE4pLNHa_oiygeFPb8kwKQB6rLGkgxog",
-        databaseURL: "https://battlefield-425ae.firebaseio.com/"
+        googleAppID: "1:667302951716:android:81bf2fe2027efa82",
+        apiKey: "AIzaSyDPSq5oa9pttCTOl9sO0xdZlQbNeCVoyrs",
     ) : FirebaseOptions(
         googleAppID: null
     ),
   );
+  final Firestore firestore = new Firestore(app: app);
 
-  runApp(MyApp();
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
